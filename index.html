@@ -22,7 +22,7 @@
   .logo h1{font-size:16px}
   .logo small{display:block;color:var(--faint);font-size:11px;letter-spacing:.5px;margin-left:24px;margin-top:-2px}
   .kpis{display:flex;gap:1px;margin-left:auto;background:var(--line);border:1px solid var(--line);border-radius:9px;overflow:hidden}
-  .kpi{background:var(--panel2);padding:6px 14px;text-align:center}
+  .kpi{background:var(--panel2);padding:6px 13px;text-align:center}
   .kpi .v{font-size:18px;font-weight:700;line-height:1.1}
   .kpi .l{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
   .toolbar{display:flex;gap:8px;align-items:center;padding:11px 18px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
@@ -38,9 +38,13 @@
   .seg button{background:none;border:none;color:var(--muted);padding:7px 12px;font-size:12.5px}
   .seg button.on{background:var(--teal);color:#04222a;font-weight:600}
   .spacer{flex:1}
+  .datectl{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
   input,select{background:var(--panel2);border:1px solid var(--line2);color:var(--txt);border-radius:7px;padding:7px 9px;font:inherit;font-size:12.5px}
   input:focus,select:focus{outline:none;border-color:var(--teal)}
-  .search{width:190px}
+  .search{width:180px}
+  .bulkbar{display:none;gap:8px;align-items:center;padding:9px 18px;flex-wrap:wrap;background:var(--navy,#1b2a4a);border-bottom:1px solid var(--teal)}
+  .bulkbar.show{display:flex}
+  .bulkbar b{color:var(--teal)}
   .gaps{margin:14px 18px 0;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:11px 15px}
   .gaps.none{border-left-color:var(--good)}
   .gaps h3{font-size:12.5px;margin-bottom:7px;display:flex;align-items:center;gap:8px}
@@ -50,19 +54,27 @@
   .gaprow b{font-weight:600}
   .gaprow .when{color:var(--warn);font-size:11px}
   .gaprow .openlbl{color:var(--teal);font-size:11px;font-weight:600}
-  .board{flex:1;padding:14px 18px 28px;overflow:auto}
-  .gridv{display:grid;gap:5px;min-width:880px}
-  .ghead{background:var(--panel2);padding:7px 6px;text-align:center;font-size:12px;font-weight:600;display:flex;flex-direction:column;gap:1px;align-items:center;border-radius:8px}
+  .legend{display:flex;gap:14px;align-items:center;padding:8px 18px 0;font-size:11px;color:var(--muted);flex-wrap:wrap}
+  .legend .li{display:flex;align-items:center;gap:5px}
+  .lgc{width:22px;height:14px;border-radius:4px;border:1px solid var(--line2);background:var(--panel2)}
+  .lgc.prim{border-left:3px solid var(--teal)}
+  .lgc.bk{border-style:dashed;border-left:3px solid var(--teal);opacity:.82}
+  .lgc.lv{border-color:var(--warn);background:var(--warnbg)}
+  .lgc.seatc{border-style:dashed;border-color:var(--teal);background:rgba(24,165,190,.08)}
+  .lgc.ptoc{opacity:.4;filter:grayscale(.6)}
+  .board{flex:1;padding:12px 18px 28px;overflow:auto}
+  .gridv{display:grid;gap:5px;min-width:880px;position:relative}
+  .ghead{background:var(--panel2);padding:7px 6px;text-align:center;font-size:12px;font-weight:600;display:flex;flex-direction:column;gap:1px;align-items:center;border-radius:8px;position:sticky;top:0;z-index:3}
   .ghead .sub{font-size:10px;color:var(--muted);font-weight:400}
-  .gcorner{background:transparent}
-  .growlab{background:var(--panel2);padding:7px 9px;display:flex;flex-direction:column;justify-content:center;font-size:12px;font-weight:600;border-radius:8px}
+  .gcorner{background:var(--bg);position:sticky;left:0;top:0;z-index:5}
+  .growlab{background:var(--panel2);padding:7px 9px;display:flex;flex-direction:column;justify-content:center;font-size:12px;font-weight:600;border-radius:8px;position:sticky;left:0;z-index:2}
   .growlab .sub{font-size:10px;color:var(--muted);font-weight:400}
   .gcell{background:var(--panel);border:1px solid var(--line);min-height:52px;padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;border-radius:8px}
   .gcell.drop{outline:2px dashed var(--teal);outline-offset:-3px;background:var(--panel2)}
   .gcell.thin{border-color:var(--warn);background:rgba(224,168,46,.05)}
   .gcell.empty{background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(255,255,255,.025) 6px,rgba(255,255,255,.025) 12px)}
   .cols{display:flex;gap:11px;align-items:flex-start;min-width:min-content}
-  .col{background:var(--panel);border:1px solid var(--line);border-radius:11px;width:206px;flex:none;display:flex;flex-direction:column;max-height:calc(100vh - 280px)}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:11px;width:210px;flex:none;display:flex;flex-direction:column;max-height:calc(100vh - 300px)}
   .col.drop{outline:2px dashed var(--teal);outline-offset:-3px}
   .colhead{padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--panel);border-radius:11px 11px 0 0}
   .colhead .nm{font-weight:600;font-size:13px}
@@ -70,19 +82,25 @@
   .colhead .ct b{color:var(--warn)}
   .colbody{padding:8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
   .subhead{font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--faint);margin:5px 2px 1px;display:flex;align-items:center;gap:6px}
-  .card{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:6px 9px;cursor:grab;display:flex;align-items:center;gap:6px;font-size:12.5px}
+  .card{background:var(--panel2);border:1px solid var(--line2);border-left:3px solid var(--line2);border-radius:8px;padding:6px 9px;cursor:grab;display:flex;align-items:center;gap:6px;font-size:12.5px}
   .card:hover{border-color:var(--teal)}
-  .card.leaving{border-color:var(--warn);background:var(--warnbg)}
-  .card.ghost{opacity:.55}
-  .card.cover{opacity:.82;border-style:dashed}
+  .card.leaving{background:var(--warnbg)}
+  .card.cover{opacity:.85;border-top-style:dashed;border-right-style:dashed;border-bottom-style:dashed}
+  .card.compact{padding:4px 8px;font-size:11.5px}
+  .card.pto{opacity:.4;filter:grayscale(.55)}
   .card.dim{opacity:.16}
   .card.hit{outline:2px solid var(--teal);outline-offset:-2px}
-  .card .dot{width:9px;height:9px;border-radius:2px;flex:none}
-  .card .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:108px}
+  .card.sel{outline:2px solid var(--teal);outline-offset:1px;background:rgba(24,165,190,.13)}
+  .card .star{color:#ffd24a;font-size:10px;margin-left:-1px}
+  .card .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:104px}
   .card .backs{display:inline-flex;gap:2px}
   .card .bdot{width:7px;height:7px;border-radius:2px;display:inline-block}
   .card .lunch{color:var(--muted);font-size:10px;margin-left:auto;white-space:nowrap}
   .card .lv{color:var(--warn);font-size:9.5px;font-weight:600;white-space:nowrap;margin-left:4px}
+  .card .ptotag{color:var(--faint);font-size:9px;font-weight:600;margin-left:auto}
+  body.compact .card{padding:3px 8px;font-size:11.5px}
+  body.compact .gcell{min-height:40px}
+  body.compact .kpi{padding:5px 10px}
   .seat{border:1px dashed var(--teal);border-radius:8px;padding:5px 8px;display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--teal);background:rgba(24,165,190,.06);cursor:pointer}
   .seat .sx{margin-left:auto;color:var(--muted);border:none;background:none;font-size:14px;padding:0 2px}
   .warnbox{background:var(--warnbg);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;margin-bottom:12px}
@@ -91,9 +109,11 @@
   .warnrow .qd{width:9px;height:9px;border-radius:2px}
   table.day{border-collapse:separate;border-spacing:2px}
   table.day th{font-size:9.5px;color:var(--muted);font-weight:500;padding:2px 0;min-width:27px}
+  table.day th.now{color:var(--teal);font-weight:700}
   table.day td.rl{font-size:11.5px;font-weight:600;text-align:left;white-space:nowrap;padding-right:10px;position:sticky;left:0;background:var(--bg)}
   table.day td.dc{width:27px;text-align:center;font-size:11px;border-radius:4px;padding:6px 0;font-variant-numeric:tabular-nums}
-  .legend{display:flex;gap:13px;align-items:center;margin:12px 2px 0;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+  table.day td.now,table.day th.now{box-shadow:inset 2px 0 0 var(--teal)}
+  .daylegend{display:flex;gap:13px;align-items:center;margin:12px 2px 0;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
   .sw{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:5px;vertical-align:middle}
   .snaptbl{border-collapse:collapse;width:100%;max-width:880px;font-variant-numeric:tabular-nums}
   .snaptbl th,.snaptbl td{border:1px solid var(--line);padding:7px 9px;font-size:12.5px;text-align:left}
@@ -102,6 +122,7 @@
   .overlay{position:fixed;inset:0;background:rgba(6,10,20,.66);display:none;align-items:center;justify-content:center;z-index:50}
   .overlay.show{display:flex}
   .modal{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:20px;width:360px;max-width:92vw;max-height:92vh;overflow:auto}
+  .modal.wide{width:480px}
   .modal h2{font-size:15px;margin-bottom:14px}
   .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
   .frow{display:flex;gap:10px}.frow .fld{flex:1}
@@ -110,6 +131,12 @@
   .chip{font-size:11.5px;padding:4px 9px;border-radius:8px;border:1px solid var(--line2);color:var(--muted);cursor:pointer;user-select:none}
   .chip.on{font-weight:600}
   .chip.primary{opacity:.45;cursor:not-allowed}
+  .ptorow{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+  .ptorow input{flex:1}
+  .setrow{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .setrow input[type=text]{flex:1}
+  .setrow input[type=color]{width:34px;height:30px;padding:1px;border-radius:6px}
+  .xbtn{border:1px solid var(--line2);background:var(--panel2);color:var(--bad);border-radius:6px;width:28px;height:28px;font-size:14px;flex:none}
   .leavetog{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 11px;cursor:pointer;font-size:12.5px;margin-bottom:12px}
   .leavetog.on{border-color:var(--warn);background:var(--warnbg)}
   .leavetog .box{width:16px;height:16px;border-radius:4px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:11px}
@@ -118,6 +145,16 @@
   .mrow .btn{flex:1;justify-content:center;text-align:center}
   .muted{color:var(--muted)} .small{font-size:12px}
   .empty-note{color:var(--faint);font-size:11px;padding:6px;text-align:center;width:100%}
+  .tip{position:fixed;display:none;z-index:100;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font-size:11.5px;max-width:250px;box-shadow:0 8px 22px rgba(0,0,0,.45);pointer-events:none;line-height:1.5}
+  .tip b{font-weight:600}
+  @media print{
+    .top,.toolbar,.filterbar,.bulkbar,.legend,.gaps,.tip,.overlay{display:none!important}
+    body{background:#fff;color:#000}
+    .board{overflow:visible;padding:0}
+    .gcell,.col,.ghead,.growlab,.gcorner,.card,.seat,.colhead{background:#fff!important;color:#000!important;border-color:#aaa!important}
+    .card .nm,.growlab,.ghead{color:#000!important}
+    table.day td.rl{background:#fff!important;color:#000!important}
+  }
 </style>
 </head>
 <body>
@@ -135,17 +172,23 @@
       <button data-view="day">Day coverage</button>
       <button data-view="snap">Snapshots</button>
     </div>
+    <label class="datectl">As of <input type="date" id="viewDate"></label>
     <button class="btn coral" id="addHire">+ Place new hire</button>
     <button class="btn" id="addPerson">+ Add person</button>
     <button class="btn" id="addSeat">+ Open seat</button>
+    <button class="btn" id="selectBtn">Select</button>
     <div class="spacer"></div>
-    <button class="btn small" id="undoBtn" title="Ctrl+Z" disabled>↶ Undo</button>
-    <button class="btn small" id="redoBtn" title="Ctrl+Y" disabled>↷ Redo</button>
-    <button class="btn small" id="importBtn">Import CSV</button>
-    <button class="btn small" id="exportBtn">Export CSV</button>
-    <button class="btn small" id="resetBtn">Reset sample</button>
+    <button class="btn small" id="undoBtn" title="Ctrl+Z" disabled>↶</button>
+    <button class="btn small" id="redoBtn" title="Ctrl+Y" disabled>↷</button>
+    <button class="btn small" id="densityBtn">Compact</button>
+    <button class="btn small" id="settingsBtn">⚙ Setup</button>
+    <button class="btn small" id="printBtn">Print</button>
+    <button class="btn small" id="importBtn">Import</button>
+    <button class="btn small" id="exportBtn">Export</button>
+    <button class="btn small" id="resetBtn">Reset</button>
     <input type="file" id="csvFile" accept=".csv" style="display:none">
   </div>
+  <div class="bulkbar" id="bulkbar"></div>
   <div class="filterbar" id="filterbar">
     <input class="search" id="fq" placeholder="Search name…">
     <select id="fFocus"></select>
@@ -154,6 +197,7 @@
     <button class="btn small" id="fClear">Clear</button>
     <span class="muted small" id="fCount"></span>
   </div>
+  <div class="legend" id="legend"></div>
   <div class="gaps" id="gaps"></div>
   <div class="board" id="board"></div>
 </div>
@@ -169,7 +213,8 @@
       <div class="fld"><label>Lunch start</label><select id="mLunchStart"></select></div>
       <div class="fld"><label>Lunch length</label><select id="mLunchMin"><option value="30">30 min</option><option value="60">60 min</option></select></div>
     </div>
-    <div class="leavetog" id="mLeaveTog"><span class="box" id="mLeaveBox"></span><span>Leaving — show as an upcoming gap</span></div>
+    <div class="fld"><label>Time off (PTO / vacation / training)</label><div id="mPto"></div><button class="btn small" id="addPtoBtn" style="align-self:flex-start">+ Add time off</button></div>
+    <div class="leavetog" id="mLeaveTog"><span class="box" id="mLeaveBox"></span><span>Leaving the team — show as an upcoming gap</span></div>
     <div class="fld" id="mDateFld" style="display:none"><label>Last day</label><input type="date" id="mDate"></div>
     <div class="mrow"><button class="btn" id="mDelete" style="color:var(--bad)">Delete</button><button class="btn" id="mCancel">Cancel</button><button class="btn teal" id="mSave">Save</button></div>
   </div>
@@ -188,8 +233,19 @@
   </div>
 </div>
 
+<div class="overlay" id="setOverlay">
+  <div class="modal wide">
+    <h2>Setup — focuses &amp; shifts</h2>
+    <div class="fld"><label>Focuses</label><div id="setFocuses"></div><button class="btn small" id="addFocusBtn" style="align-self:flex-start">+ Add focus</button></div>
+    <div class="fld"><label>Shifts (start &amp; end, e.g. 5:00a and 1:30p)</label><div id="setShifts"></div><button class="btn small" id="addShiftBtn" style="align-self:flex-start">+ Add shift</button></div>
+    <div class="mrow"><button class="btn" id="setCancel">Cancel</button><button class="btn teal" id="setSave">Save setup</button></div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+
 <script>
-const FOCUSES=[
+const DEFAULT_FOCUSES=[
   {id:'config',name:'Config / Other',color:'#18a5be'},
   {id:'password',name:'Password',color:'#a974e0'},
   {id:'tech',name:'Tech',color:'#5b8def'},
@@ -198,13 +254,16 @@ const FOCUSES=[
   {id:'engage',name:'Accuro Engage',color:'#e0a82e'},
 ];
 const fmtHM=h=>{let hh=Math.floor(h);const m=Math.round((h-hh)*60);const ap=hh>=12?'p':'a';let d=hh%12;if(d===0)d=12;return d+(m?(':'+String(m).padStart(2,'0')):'')+ap;};
-const SHIFTS=[
+function mkShifts(arr){ return arr.map((p,i)=>({id:p.id||('s'+i),start:p.s,end:p.e,label:fmtHM(p.s)+'–'+fmtHM(p.e)})); }
+const DEFAULT_SHIFTS=mkShifts([
   {s:5,e:13.5},{s:5.5,e:14},{s:6,e:14.5},{s:6.5,e:15},{s:7,e:15.5},
   {s:7.5,e:16},{s:8,e:16.5},{s:8.5,e:17},{s:8.75,e:17.25}
-].map((p,i)=>({id:'s'+i,start:p.s,end:p.e,label:fmtHM(p.s)+'–'+fmtHM(p.e)}));
+]);
 const LUNCH_TIMES=[]; for(let t=8;t<=15;t+=0.5) LUNCH_TIMES.push(t);
 const DAY_TS=[]; for(let t=5;t<=16.5;t+=0.5) DAY_TS.push(t);
 const SKEY='accuroSimplePlan3', SNAPKEY='accuroSimplePlanSnaps';
+let FOCUSES=JSON.parse(JSON.stringify(DEFAULT_FOCUSES));
+let SHIFTS=JSON.parse(JSON.stringify(DEFAULT_SHIFTS));
 const focusById=id=>FOCUSES.find(f=>f.id===id)||FOCUSES[0];
 const shiftById=id=>SHIFTS.find(s=>s.id===id)||SHIFTS[0];
 const seatById=id=>seats.find(s=>s.id===id);
@@ -215,6 +274,8 @@ const esc=s=>(''+(s==null?'':s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 
 let people=[], seats=[], view='grid', afterDep=false, selectedSnap=null;
 let F={q:'',focus:'',shift:'',backup:''};
+let viewDate=todayStr();
+let selectMode=false, selected=new Set();
 
 function sampleData(){
   const specialties=['tech','billing','labs','password','engage'];
@@ -222,8 +283,8 @@ function sampleData(){
   const arr=[];
   for(let n=1;n<=46;n++){ const sh=SHIFTS[(n-1)%SHIFTS.length];
     const ls=clamp(round2(sh.start+3+(n%5)*0.5), sh.start+2, sh.end-1);
-    const backups=(n%5!==0)?[specialties[(n-1)%specialties.length]]:[]; // everyone is Config/Other; most also cover one specialty
-    arr.push({id:'p'+n,name:first[n-1]||('Agent '+n),focus:'config',backups,shift:sh.id,lunchStart:ls,lunchMin:(n%3===0?60:30),status:'active',lastDay:null}); }
+    const backups=(n%5!==0)?[specialties[(n-1)%specialties.length]]:[];
+    arr.push({id:'p'+n,name:first[n-1]||('Agent '+n),focus:'config',backups,shift:sh.id,lunchStart:ls,lunchMin:(n%3===0?60:30),status:'active',lastDay:null,timeOff:[]}); }
   const d=new Date(); d.setDate(d.getDate()+18); const dd=d.toISOString().slice(0,10);
   if(arr[2]){arr[2].status='leaving';arr[2].lastDay=dd;}
   if(arr[14]){arr[14].status='leaving';arr[14].lastDay=dd;}
@@ -233,31 +294,33 @@ function migrate(list){ return (list||[]).map(p=>({
   id:p.id||('p'+Math.random().toString(36).slice(2)), name:p.name||'Unnamed', focus:focusById(p.focus).id,
   backups:Array.isArray(p.backups)?p.backups.filter(b=>b!==p.focus&&FOCUSES.some(f=>f.id===b)):[],
   shift:shiftById(p.shift).id, lunchStart:(p.lunchStart!=null?p.lunchStart:11.5), lunchMin:(p.lunchMin||30),
-  status:p.status||'active', lastDay:p.lastDay||null })); }
+  status:p.status||'active', lastDay:p.lastDay||null,
+  timeOff:Array.isArray(p.timeOff)?p.timeOff.filter(r=>r&&r.from&&r.to):[] })); }
 
-/* ---- persistence + history (people + seats) ---- */
+/* ---- persistence + history ---- */
 let undoStack=[],redoStack=[],lastSnap=null,restoring=false;
-const snap=()=>JSON.stringify({people,seats});
-function restoreSnap(str){ const o=JSON.parse(str); people=o.people||[]; seats=o.seats||[]; }
+const snap=()=>JSON.stringify({people,seats,focuses:FOCUSES,shifts:SHIFTS});
+function restoreSnap(str){ const o=JSON.parse(str); people=o.people||[]; seats=o.seats||[]; if(o.focuses)FOCUSES=o.focuses; if(o.shifts)SHIFTS=o.shifts; }
 function record(){ if(restoring)return; const cur=snap();
   if(lastSnap===null){lastSnap=cur;return;}
   if(cur!==lastSnap){ undoStack.push(lastSnap); if(undoStack.length>150)undoStack.shift(); redoStack=[]; lastSnap=cur; } }
 function undo(){ if(!undoStack.length)return; redoStack.push(snap()); restoreSnap(undoStack.pop()); lastSnap=snap(); save(); render(); }
 function redo(){ if(!redoStack.length)return; undoStack.push(snap()); restoreSnap(redoStack.pop()); lastSnap=snap(); save(); render(); }
-function save(){ try{localStorage.setItem(SKEY,JSON.stringify({people,seats}));}catch(e){} }
+function save(){ try{localStorage.setItem(SKEY,JSON.stringify({people,seats,focuses:FOCUSES,shifts:SHIFTS}));}catch(e){} }
 function load(){ try{const r=localStorage.getItem(SKEY); if(r){const o=JSON.parse(r);
-  if(Array.isArray(o)) return {people:migrate(o),seats:[]};
-  if(o&&o.people) return {people:migrate(o.people),seats:Array.isArray(o.seats)?o.seats:[]}; } }catch(e){} return null; }
+  if(Array.isArray(o)) return {people:o,seats:[],focuses:null,shifts:null};
+  if(o&&o.people) return {people:o.people,seats:Array.isArray(o.seats)?o.seats:[],focuses:o.focuses||null,shifts:o.shifts||null}; } }catch(e){} return null; }
 function getSnaps(){ try{return JSON.parse(localStorage.getItem(SNAPKEY)||'{}');}catch(e){return {};} }
 function setSnaps(o){ try{localStorage.setItem(SNAPKEY,JSON.stringify(o));}catch(e){} }
 
 /* ---- helpers ---- */
 const isLeaving=p=>p.status==='leaving';
+const isOut=p=>(p.timeOff||[]).some(r=>r.from<=viewDate&&viewDate<=r.to);
 const activeAfter=list=>list.filter(p=>!isLeaving(p)).length;
 const coversFocus=(p,fid)=>p.focus===fid||(p.backups||[]).includes(fid);
 function inShift(p,t){ const sh=shiftById(p.shift); return t>=sh.start&&t<sh.end; }
-function onPhone(p,t){ if(!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return !(t>=p.lunchStart&&t<le); }
-function atLunch(p,t){ if(!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return t>=p.lunchStart&&t<le; }
+function onPhone(p,t){ if(isOut(p)||!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return !(t>=p.lunchStart&&t<le); }
+function atLunch(p,t){ if(isOut(p)||!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return t>=p.lunchStart&&t<le; }
 function upcomingGaps(){ return people.filter(isLeaving).map(p=>({p,focus:focusById(p.focus),shift:shiftById(p.shift)}))
   .sort((a,b)=>(a.p.lastDay||'').localeCompare(b.p.lastDay||'')); }
 function filterActive(){ return F.q||F.focus||F.shift||F.backup; }
@@ -269,16 +332,24 @@ function matchFilter(p){
   return true;
 }
 
-/* ---- KPIs / gaps ---- */
+/* ---- KPIs / gaps / legend ---- */
 function renderKPIs(){
   const total=people.length, leaving=people.filter(isLeaving).length, active=total-leaving;
+  const out=people.filter(isOut).length;
   let minCov=Infinity; DAY_TS.forEach(t=>{ if(t<5||t>=17)return; const n=people.filter(p=>onPhone(p,t)).length; if(n<minCov)minCov=n; });
   document.getElementById('kpis').innerHTML=`
     <div class="kpi"><div class="v">${total}</div><div class="l">People</div></div>
     <div class="kpi"><div class="v" style="color:var(--good)">${active}</div><div class="l">Staying</div></div>
     <div class="kpi"><div class="v" style="color:var(--warn)">${leaving}</div><div class="l">Leaving</div></div>
+    <div class="kpi"><div class="v" style="color:var(--faint)">${out}</div><div class="l">Out (PTO)</div></div>
     <div class="kpi"><div class="v" style="color:var(--teal)">${seats.length}</div><div class="l">Open seats</div></div>
     <div class="kpi"><div class="v">${minCov===Infinity?0:minCov}</div><div class="l">Min on-phone</div></div>`;
+}
+function renderLegend(){
+  const el=document.getElementById('legend');
+  if(view==='day'||view==='snap'){ el.style.display='none'; return; }
+  el.style.display='flex';
+  el.innerHTML=`<span class="li"><span class="lgc prim"></span>primary focus ★</span><span class="li"><span class="lgc bk"></span>backup (also covers)</span><span class="li"><span class="lgc lv"></span>leaving</span><span class="li"><span class="lgc ptoc"></span>out / PTO</span><span class="li"><span class="lgc seatc"></span>open seat</span>`;
 }
 function renderGaps(){
   const g=upcomingGaps(); const el=document.getElementById('gaps');
@@ -295,22 +366,48 @@ function renderGaps(){
 /* ---- cards ---- */
 function cardHTML(p,opts){
   opts=opts||{}; const f=focusById(p.focus);
-  const backs=(p.backups||[]).map(b=>`<span class="bdot" title="backup ${focusById(b).name}" style="background:${focusById(b).color}"></span>`).join('');
-  const meta = opts.ghost ? '' : `<span class="lunch">${fmtHM(p.lunchStart)}·${p.lunchMin}</span>`;
-  const lv=isLeaving(p)&&!opts.ghost?`<span class="lv">↓${p.lastDay||''}</span>`:'';
-  let cls='';
-  if(opts.ctxFocus&&p.focus!==opts.ctxFocus) cls+=' cover';
+  const isCover=opts.ctxFocus&&p.focus!==opts.ctxFocus;
+  const out=isOut(p);
+  let cls='card';
+  if(isLeaving(p)) cls+=' leaving';
+  if(isCover) cls+=' cover compact';
+  if(out) cls+=' pto';
+  if(selectMode&&selected.has(p.id)) cls+=' sel';
   if(filterActive()){ if(matchFilter(p)){ if(F.q) cls+=' hit'; } else cls+=' dim'; }
-  return `<div class="card ${isLeaving(p)?'leaving':''} ${opts.ghost?'ghost':''}${cls}" draggable="${opts.ghost?'false':'true'}" data-id="${p.id}">
-    <span class="dot" style="background:${f.color}"></span><span class="nm">${esc(p.name)}</span>${backs?`<span class="backs">${backs}</span>`:''}${meta}${lv}</div>`;
+  const star = (!isCover) ? `<span class="star" title="primary focus">★</span>` : '';
+  const backs = isCover ? '' : (p.backups||[]).map(b=>`<span class="bdot" title="backup ${focusById(b).name}" style="background:${focusById(b).color}"></span>`).join('');
+  let tail='';
+  if(out) tail=`<span class="ptotag">PTO</span>`;
+  else if(isLeaving(p)) tail=`<span class="lv">↓${p.lastDay||''}</span>`;
+  else if(!isCover) tail=`<span class="lunch">${fmtHM(p.lunchStart)}·${p.lunchMin}</span>`;
+  return `<div class="${cls}" draggable="${selectMode?'false':'true'}" data-id="${p.id}" style="border-left-color:${f.color}">
+    ${star}<span class="dot" style="display:none"></span><span class="nm">${esc(p.name)}</span>${backs?`<span class="backs">${backs}</span>`:''}${tail}</div>`;
 }
-function seatHTML(s){ const f=focusById(s.focus); return `<div class="seat" data-seat="${s.id}"><span class="dot" style="background:${f.color};width:9px;height:9px;border-radius:2px"></span>OPEN · ${f.name}<button class="sx" data-seatdel="${s.id}" title="Remove seat">×</button></div>`; }
+function seatHTML(s){ const f=focusById(s.focus); return `<div class="seat" data-seat="${s.id}"><span style="width:9px;height:9px;border-radius:2px;background:${f.color}"></span>OPEN · ${f.name}<button class="sx" data-seatdel="${s.id}" title="Remove seat">×</button></div>`; }
+
+/* ---- tooltip ---- */
+function tipHTML(p){ const f=focusById(p.focus);
+  const bk=(p.backups||[]).map(b=>focusById(b).name).join(', ')||'—';
+  const offs=(p.timeOff||[]).map(r=>r.from+'→'+r.to).join('; ');
+  return `<b>${esc(p.name)}</b><br>Primary: <span style="color:${f.color}">${f.name}</span><br>Backup: ${esc(bk)}<br>Shift: ${shiftById(p.shift).label}<br>Lunch: ${fmtHM(p.lunchStart)} · ${p.lunchMin}m`+
+    (isLeaving(p)?`<br><span style="color:var(--warn)">Leaving ${p.lastDay||''}</span>`:'')+
+    (offs?`<br><span style="color:var(--faint)">Off: ${esc(offs)}</span>`:'');
+}
+function wireTips(scope){
+  const tip=document.getElementById('tip');
+  scope.querySelectorAll('.card[data-id]').forEach(c=>{
+    c.addEventListener('mouseenter',()=>{ if(selectMode)return; const p=people.find(x=>x.id===c.dataset.id); if(!p)return; tip.innerHTML=tipHTML(p); tip.style.display='block'; });
+    c.addEventListener('mousemove',e=>{ tip.style.left=Math.min(e.clientX+14,innerWidth-260)+'px'; tip.style.top=Math.min(e.clientY+14,innerHeight-120)+'px'; });
+    c.addEventListener('mouseleave',()=>{ tip.style.display='none'; });
+  });
+}
 
 /* ---- board ---- */
 function renderBoard(){
   const board=document.getElementById('board');
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
   document.getElementById('filterbar').style.display=(view==='day'||view==='snap')?'none':'flex';
+  renderLegend();
   if(view==='grid') board.innerHTML=gridView();
   else if(view==='day') board.innerHTML=dayView();
   else if(view==='snap') board.innerHTML=snapView();
@@ -318,9 +415,13 @@ function renderBoard(){
   if(view==='day'){ const t=document.getElementById('afterDepBtn'); if(t)t.onclick=()=>{afterDep=!afterDep;renderBoard();}; }
   if(view==='snap'){ wireSnap(); return; }
   wireDnD();
-  board.querySelectorAll('.card[data-id]').forEach(c=>c.addEventListener('click',()=>{ if(c.dataset.dragged){c.dataset.dragged='';return;} openEditor(c.dataset.id); }));
+  board.querySelectorAll('.card[data-id]').forEach(c=>c.addEventListener('click',()=>{
+    if(c.dataset.dragged){c.dataset.dragged='';return;}
+    if(selectMode){ const id=c.dataset.id; if(selected.has(id))selected.delete(id); else selected.add(id); renderBoard(); renderBulk(); }
+    else openEditor(c.dataset.id); }));
   board.querySelectorAll('[data-seat]').forEach(c=>c.addEventListener('click',e=>{ if(e.target.dataset.seatdel!=null)return; openEditor(null,seatById(c.dataset.seat)); }));
   board.querySelectorAll('[data-seatdel]').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); seats=seats.filter(s=>s.id!==b.dataset.seatdel); commit(); }));
+  wireTips(board);
   updateFilterCount();
 }
 function gridView(){
@@ -348,7 +449,7 @@ function colsView(mode){
     const list=people.filter(c.match); const leav=list.length-activeAfter(list);
     const colSeats=seats.filter(c.smatch);
     const dropAttr = c.drop==='focus'?`data-focus="${c.key}"`:c.drop==='shift'?`data-shift="${c.key}"`:`data-lunch="${c.key}"`;
-    h+=`<div class="col" ${dropAttr}><div class="colhead"><span class="dot" style="width:11px;height:11px;border-radius:3px;background:${c.color}"></span><span class="nm">${c.label}</span><span class="ct">${activeAfter(list)}${leav?` <b>−${leav}</b>`:''}${colSeats.length?` <span style="color:var(--teal)">+${colSeats.length} open</span>`:''}</span></div><div class="colbody">`;
+    h+=`<div class="col" ${dropAttr}><div class="colhead"><span style="width:11px;height:11px;border-radius:3px;background:${c.color}"></span><span class="nm">${c.label}</span><span class="ct">${activeAfter(list)}${leav?` <b>−${leav}</b>`:''}${colSeats.length?` <span style="color:var(--teal)">+${colSeats.length} open</span>`:''}</span></div><div class="colbody">`;
     if(mode==='focus'){
       SHIFTS.forEach(sh=>{ const sub=list.filter(p=>p.shift===sh.id); const ss=colSeats.filter(s=>s.shift===sh.id);
         if(sub.length||ss.length) h+=`<div class="subhead">${sh.label}</div>`+sub.map(p=>cardHTML(p,{ctxFocus:c.key})).join('')+ss.map(seatHTML).join(''); });
@@ -371,9 +472,9 @@ function lunchWarnings(set){
   const out=[];
   FOCUSES.forEach(f=>{ let run=null;
     DAY_TS.forEach(t=>{
-      const sched=set.filter(p=>coversFocus(p,f.id)&&inShift(p,t)).length;
+      const sched=set.filter(p=>coversFocus(p,f.id)&&!isOut(p)&&inShift(p,t)).length;
       const onp=set.filter(p=>coversFocus(p,f.id)&&onPhone(p,t)).length;
-      const hole = sched>0 && onp===0; // assigned people exist but all at lunch
+      const hole = sched>0 && onp===0;
       if(hole){ if(!run) run={from:t,to:t+0.5,n:sched}; else { run.to=t+0.5; run.n=Math.max(run.n,sched); } }
       else if(run){ out.push({focus:f,...run}); run=null; }
     });
@@ -381,27 +482,29 @@ function lunchWarnings(set){
   });
   return out;
 }
+function nowIndex(){ const n=new Date(); const dec=n.getHours()+n.getMinutes()/60; if(dec<5||dec>=17)return -1; return DAY_TS.indexOf(round2(dec-0.25)); }
 function dayView(){
   const set = afterDep? people.filter(p=>!isLeaving(p)) : people;
+  const ni=nowIndex();
   let h='';
   const warns=lunchWarnings(set);
   if(warns.length){ h+=`<div class="warnbox"><h3>⚠ Lunch coverage holes</h3>`+
-    warns.map(w=>`<div class="warnrow"><span class="qd" style="background:${w.focus.color}"></span><b>${w.focus.name}</b> uncovered ${fmtHM(w.from)}–${fmtHM(w.to)} — all ${w.n} assigned ${w.n===1?'person is':'people are'} at lunch</div>`).join('')+`</div>`; }
-  h+=`<div class="toolbar" style="padding:0 0 10px;border:none"><button class="btn small ${afterDep?'on':''}" id="afterDepBtn">After departures: ${afterDep?'ON':'off'}</button><span class="muted small">${afterDep?'Showing coverage once everyone marked leaving is gone.':'Showing current coverage (everyone on the roster).'}</span></div>`;
-  h+=`<div class="muted small" style="margin-bottom:10px">People on shift who can cover each focus (primary or backup), every 30 min. Someone counts toward every focus they cover, so rows can overlap. <b style="color:#ffb4a4">Red</b> = nobody able to cover that focus while the floor is open.</div>`;
-  h+=`<div style="overflow:auto"><table class="day"><thead><tr><th class="rl"></th>${DAY_TS.map(t=>`<th>${t%1===0?fmtHM(t):''}</th>`).join('')}</tr></thead><tbody>`;
+    warns.map(w=>`<div class="warnrow"><span class="qd" style="background:${w.focus.color}"></span><b>${w.focus.name}</b> uncovered ${fmtHM(w.from)}–${fmtHM(w.to)} — all ${w.n} who can cover are at lunch</div>`).join('')+`</div>`; }
+  h+=`<div class="toolbar" style="padding:0 0 10px;border:none"><button class="btn small ${afterDep?'on':''}" id="afterDepBtn">After departures: ${afterDep?'ON':'off'}</button><span class="muted small">${afterDep?'Showing coverage once everyone marked leaving is gone.':'Current coverage on '+viewDate+'. PTO for that date is excluded.'}</span></div>`;
+  h+=`<div class="muted small" style="margin-bottom:10px">People on shift who can cover each focus (primary or backup), every 30 min. Someone counts toward every focus they cover. <b style="color:#ffb4a4">Red</b> = nobody able to cover while open. ${ni>=0?'<b style="color:var(--teal)">Teal line</b> = now.':''}</div>`;
+  h+=`<div style="overflow:auto"><table class="day"><thead><tr><th class="rl"></th>${DAY_TS.map((t,i)=>`<th class="${i===ni?'now':''}">${t%1===0?fmtHM(t):''}</th>`).join('')}</tr></thead><tbody>`;
   FOCUSES.forEach(f=>{ h+=`<tr><td class="rl" style="color:${f.color}">${f.name}</td>`;
-    DAY_TS.forEach(t=>{ const n=set.filter(p=>coversFocus(p,f.id)&&onPhone(p,t)).length; h+=`<td class="dc" style="${dcStyle(n)}">${n||''}</td>`; });
+    DAY_TS.forEach((t,i)=>{ const n=set.filter(p=>coversFocus(p,f.id)&&onPhone(p,t)).length; h+=`<td class="dc ${i===ni?'now':''}" style="${dcStyle(n)}">${n||''}</td>`; });
     h+=`</tr>`; });
-  h+=`<tr><td class="rl" style="border-top:2px solid var(--line2)">All on-phone</td>${DAY_TS.map(t=>{const n=set.filter(p=>onPhone(p,t)).length;return `<td class="dc" style="${dcStyle(n)};font-weight:700;border-top:2px solid var(--line2)">${n}</td>`;}).join('')}</tr>`;
-  h+=`<tr><td class="rl muted">At lunch</td>${DAY_TS.map(t=>{const n=set.filter(p=>atLunch(p,t)).length;return `<td class="dc" style="background:rgba(224,168,46,${Math.min(.6,n*0.09)});color:#2a1e02">${n||''}</td>`;}).join('')}</tr>`;
+  h+=`<tr><td class="rl" style="border-top:2px solid var(--line2)">All on-phone</td>${DAY_TS.map((t,i)=>{const n=set.filter(p=>onPhone(p,t)).length;return `<td class="dc ${i===ni?'now':''}" style="${dcStyle(n)};font-weight:700;border-top:2px solid var(--line2)">${n}</td>`;}).join('')}</tr>`;
+  h+=`<tr><td class="rl muted">At lunch</td>${DAY_TS.map((t,i)=>{const n=set.filter(p=>atLunch(p,t)).length;return `<td class="dc ${i===ni?'now':''}" style="background:rgba(224,168,46,${Math.min(.6,n*0.09)});color:#2a1e02">${n||''}</td>`;}).join('')}</tr>`;
   h+=`</tbody></table></div>`;
-  h+=`<div class="legend"><span><span class="sw" style="background:rgba(232,81,45,.5)"></span>0 — hole</span><span><span class="sw" style="background:rgba(224,168,46,.34)"></span>1 — thin</span><span><span class="sw" style="background:rgba(63,174,116,.3)"></span>covered</span><span><span class="sw" style="background:rgba(63,174,116,.55)"></span>well staffed</span></div>`;
+  h+=`<div class="daylegend"><span><span class="sw" style="background:rgba(232,81,45,.5)"></span>0 — hole</span><span><span class="sw" style="background:rgba(224,168,46,.34)"></span>1 — thin</span><span><span class="sw" style="background:rgba(63,174,116,.3)"></span>covered</span><span><span class="sw" style="background:rgba(63,174,116,.55)"></span>well staffed</span></div>`;
   return h;
 }
 
 /* ---- snapshots ---- */
-function focusCounts(list){ const o={}; FOCUSES.forEach(f=>o[f.id]=0); list.filter(p=>!isLeaving(p)).forEach(p=>o[p.focus]++); return o; }
+function focusCounts(list){ const o={}; FOCUSES.forEach(f=>o[f.id]=0); list.filter(p=>(p.status||'active')!=='leaving').forEach(p=>{ if(o[p.focus]!=null)o[p.focus]++; }); return o; }
 function snapView(){
   const snaps=getSnaps(); const names=Object.keys(snaps);
   let h=`<div class="toolbar" style="padding:0 0 14px;border:none"><input id="snapName" placeholder="Snapshot name (June, Q3…)" style="width:230px"><button class="btn teal" id="snapSave">Save current as snapshot</button></div>`;
@@ -452,13 +555,20 @@ function wireDnD(){
 }
 
 /* ---- person editor ---- */
-let editId=null, editLeaving=false, editPrimary='config', editBackups=[], editSeatId=null;
+let editId=null, editLeaving=false, editPrimary='config', editBackups=[], editSeatId=null, editPto=[];
 function renderBackupChips(){
   const el=document.getElementById('mBackups');
   el.innerHTML=FOCUSES.map(f=>{ const isP=f.id===editPrimary; const on=editBackups.includes(f.id);
     return `<span class="chip ${isP?'primary':''} ${on?'on':''}" data-b="${f.id}" style="border-color:${f.color};${on||isP?'color:'+f.color:''}">${f.name}${isP?' (primary)':''}</span>`; }).join('');
   el.querySelectorAll('[data-b]').forEach(c=>c.onclick=()=>{ const id=c.dataset.b; if(id===editPrimary)return;
     if(editBackups.includes(id)) editBackups=editBackups.filter(x=>x!==id); else editBackups.push(id); renderBackupChips(); });
+}
+function renderPto(){
+  const el=document.getElementById('mPto');
+  el.innerHTML=editPto.map((r,i)=>`<div class="ptorow"><input type="date" data-pf="${i}" value="${r.from||''}"><span class="muted">→</span><input type="date" data-pt="${i}" value="${r.to||''}"><button class="xbtn" data-px="${i}">×</button></div>`).join('');
+  el.querySelectorAll('[data-pf]').forEach(inp=>inp.onchange=()=>editPto[+inp.dataset.pf].from=inp.value);
+  el.querySelectorAll('[data-pt]').forEach(inp=>inp.onchange=()=>editPto[+inp.dataset.pt].to=inp.value);
+  el.querySelectorAll('[data-px]').forEach(b=>b.onclick=()=>{ editPto.splice(+b.dataset.px,1); renderPto(); });
 }
 function openEditor(id, seat){
   editId=id; editSeatId=null;
@@ -471,19 +581,19 @@ function openEditor(id, seat){
     document.getElementById('mTitle').textContent='Edit person';
     document.getElementById('mName').value=p.name; fSel.value=p.focus; sSel.value=p.shift; lSel.value=p.lunchStart;
     document.getElementById('mLunchMin').value=String(p.lunchMin);
-    editPrimary=p.focus; editBackups=(p.backups||[]).slice();
+    editPrimary=p.focus; editBackups=(p.backups||[]).slice(); editPto=JSON.parse(JSON.stringify(p.timeOff||[]));
     editLeaving=isLeaving(p); document.getElementById('mDate').value=p.lastDay||'';
     document.getElementById('mDelete').style.display='';
   } else {
-    document.getElementById('mName').value=''; editLeaving=false; document.getElementById('mDate').value='';
+    document.getElementById('mName').value=''; editLeaving=false; document.getElementById('mDate').value=''; editPto=[];
     if(seat){ document.getElementById('mTitle').textContent='Fill open seat'; fSel.value=seat.focus; sSel.value=seat.shift; lSel.value=seat.lunchStart||11.5; document.getElementById('mLunchMin').value=String(seat.lunchMin||30); editSeatId=seat.id; }
     else { document.getElementById('mTitle').textContent='Place new hire'; const g=upcomingGaps()[0];
       if(g){ fSel.value=g.focus.id; sSel.value=g.shift.id; lSel.value=g.p.lunchStart; document.getElementById('mLunchMin').value=String(g.p.lunchMin); }
-      else { fSel.value='config'; lSel.value=11.5; document.getElementById('mLunchMin').value='30'; } }
+      else { fSel.value=FOCUSES[0].id; lSel.value=11.5; document.getElementById('mLunchMin').value='30'; } }
     editPrimary=fSel.value; editBackups=[];
     document.getElementById('mDelete').style.display='none';
   }
-  renderBackupChips(); syncLeaveUI();
+  renderBackupChips(); renderPto(); syncLeaveUI();
   document.getElementById('overlay').classList.add('show');
   setTimeout(()=>document.getElementById('mName').focus(),30);
 }
@@ -499,14 +609,16 @@ function saveEditor(){
   const focus=document.getElementById('mFocus').value, shift=document.getElementById('mShift').value;
   const lunchStart=parseFloat(document.getElementById('mLunchStart').value), lunchMin=parseInt(document.getElementById('mLunchMin').value);
   const backups=editBackups.filter(b=>b!==focus);
+  const timeOff=editPto.filter(r=>r.from&&r.to);
   const status=editLeaving?'leaving':'active', lastDay=editLeaving?(document.getElementById('mDate').value||todayStr()):null;
-  if(editId){ const p=people.find(x=>x.id===editId); Object.assign(p,{name,focus,backups,shift,lunchStart,lunchMin,status,lastDay}); }
-  else { people.push({id:'p'+Date.now(),name,focus,backups,shift,lunchStart,lunchMin,status,lastDay});
+  if(editId){ const p=people.find(x=>x.id===editId); Object.assign(p,{name,focus,backups,shift,lunchStart,lunchMin,status,lastDay,timeOff}); }
+  else { people.push({id:'p'+Date.now(),name,focus,backups,shift,lunchStart,lunchMin,status,lastDay,timeOff});
     if(editSeatId) seats=seats.filter(s=>s.id!==editSeatId); }
   closeEditor(); commit();
 }
 function deletePerson(){ if(editId) people=people.filter(x=>x.id!==editId); closeEditor(); commit(); }
 document.getElementById('mFocus').onchange=function(){ editPrimary=this.value; editBackups=editBackups.filter(b=>b!==editPrimary); renderBackupChips(); };
+document.getElementById('addPtoBtn').onclick=()=>{ editPto.push({from:todayStr(),to:todayStr()}); renderPto(); };
 
 /* ---- seat editor ---- */
 function openSeatModal(){
@@ -522,19 +634,75 @@ function addSeats(){
   document.getElementById('seatOverlay').classList.remove('show'); commit(); flash('Added '+n+' open seat'+(n>1?'s':''));
 }
 
+/* ---- settings (focuses & shifts) ---- */
+let editFoc=[], editShf=[];
+function renderSetRows(){
+  const fe=document.getElementById('setFocuses');
+  fe.innerHTML=editFoc.map((f,i)=>`<div class="setrow"><input type="color" data-fc="${i}" value="${f.color}"><input type="text" data-fn="${i}" value="${esc(f.name)}" placeholder="Focus name"><button class="xbtn" data-fx="${i}">×</button></div>`).join('');
+  fe.querySelectorAll('[data-fn]').forEach(inp=>inp.onchange=()=>editFoc[+inp.dataset.fn].name=inp.value);
+  fe.querySelectorAll('[data-fc]').forEach(inp=>inp.onchange=()=>editFoc[+inp.dataset.fc].color=inp.value);
+  fe.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{ if(editFoc.length<=1){flash('Keep at least one focus');return;} editFoc.splice(+b.dataset.fx,1); renderSetRows(); });
+  const se=document.getElementById('setShifts');
+  se.innerHTML=editShf.map((s,i)=>`<div class="setrow"><input type="text" data-ss="${i}" value="${fmtHM(s.s)}" placeholder="5:00a" style="max-width:90px"><span class="muted">→</span><input type="text" data-se="${i}" value="${fmtHM(s.e)}" placeholder="1:30p" style="max-width:90px"><button class="xbtn" data-sx="${i}">×</button></div>`).join('');
+  se.querySelectorAll('[data-ss]').forEach(inp=>inp.onchange=()=>{ const t=parseTime(inp.value); if(t!=null)editShf[+inp.dataset.ss].s=t; renderSetRows(); });
+  se.querySelectorAll('[data-se]').forEach(inp=>inp.onchange=()=>{ const t=parseTime(inp.value); if(t!=null)editShf[+inp.dataset.se].e=t; renderSetRows(); });
+  se.querySelectorAll('[data-sx]').forEach(b=>b.onclick=()=>{ if(editShf.length<=1){flash('Keep at least one shift');return;} editShf.splice(+b.dataset.sx,1); renderSetRows(); });
+}
+function openSettings(){
+  editFoc=FOCUSES.map(f=>({id:f.id,name:f.name,color:f.color}));
+  editShf=SHIFTS.map(s=>({id:s.id,s:s.start,e:s.end}));
+  renderSetRows();
+  document.getElementById('setOverlay').classList.add('show');
+}
+function saveSettings(){
+  const nf=editFoc.filter(f=>(f.name||'').trim()).map(f=>({id:f.id||('f'+Math.random().toString(36).slice(2,7)),name:f.name.trim(),color:f.color||'#888'}));
+  const ns=editShf.filter(s=>s.s!=null&&s.e!=null&&s.e>s.s).map(s=>({id:s.id||('s'+Math.random().toString(36).slice(2,7)),start:s.s,end:s.e,label:fmtHM(s.s)+'–'+fmtHM(s.e)}));
+  if(!nf.length||!ns.length){ flash('Need at least one focus and one shift'); return; }
+  FOCUSES=nf; SHIFTS=ns;
+  const fids=new Set(FOCUSES.map(f=>f.id)), sids=new Set(SHIFTS.map(s=>s.id));
+  people.forEach(p=>{ if(!fids.has(p.focus))p.focus=FOCUSES[0].id; p.backups=(p.backups||[]).filter(b=>fids.has(b)&&b!==p.focus); if(!sids.has(p.shift))p.shift=SHIFTS[0].id; });
+  seats=seats.filter(s=>fids.has(s.focus)&&sids.has(s.shift));
+  document.getElementById('setOverlay').classList.remove('show');
+  buildFilterSelects(); commit(); flash('Setup saved');
+}
+
+/* ---- bulk select ---- */
+function renderBulk(){
+  const el=document.getElementById('bulkbar');
+  if(!selectMode){ el.classList.remove('show'); el.innerHTML=''; return; }
+  el.classList.add('show');
+  el.innerHTML=`<b>${selected.size} selected</b>
+    <select id="bkShift"><option value="">Set shift…</option>${SHIFTS.map(s=>`<option value="${s.id}">${s.label}</option>`).join('')}</select>
+    <select id="bkLunch"><option value="">Set lunch…</option>${LUNCH_TIMES.map(t=>`<option value="${t}">${fmtHM(t)}</option>`).join('')}</select>
+    <select id="bkBackup"><option value="">Add backup…</option>${FOCUSES.map(f=>`<option value="${f.id}">+ ${f.name}</option>`).join('')}</select>
+    <button class="btn small" id="bkLeave">Mark leaving</button>
+    <button class="btn small" id="bkDelete" style="color:var(--bad)">Delete</button>
+    <button class="btn small" id="bkClear">Clear</button>
+    <button class="btn small teal" id="bkDone">Done</button>`;
+  const sel=()=>people.filter(p=>selected.has(p.id));
+  el.querySelector('#bkShift').onchange=function(){ if(this.value){ sel().forEach(p=>p.shift=this.value); commit(); renderBulk(); } };
+  el.querySelector('#bkLunch').onchange=function(){ if(this.value){ sel().forEach(p=>p.lunchStart=parseFloat(this.value)); commit(); renderBulk(); } };
+  el.querySelector('#bkBackup').onchange=function(){ if(this.value){ sel().forEach(p=>{ if(p.focus!==this.value&&!(p.backups||[]).includes(this.value))(p.backups=p.backups||[]).push(this.value); }); commit(); renderBulk(); } };
+  el.querySelector('#bkLeave').onclick=()=>{ const d=new Date();d.setDate(d.getDate()+14); const dd=d.toISOString().slice(0,10); sel().forEach(p=>{p.status='leaving';if(!p.lastDay)p.lastDay=dd;}); commit(); renderBulk(); };
+  el.querySelector('#bkDelete').onclick=()=>{ if(!selected.size)return; if(confirm('Delete '+selected.size+' selected people?')){ people=people.filter(p=>!selected.has(p.id)); selected.clear(); commit(); renderBulk(); } };
+  el.querySelector('#bkClear').onclick=()=>{ selected.clear(); renderBoard(); renderBulk(); };
+  el.querySelector('#bkDone').onclick=()=>{ selectMode=false; selected.clear(); document.getElementById('selectBtn').classList.remove('on'); renderBoard(); renderBulk(); };
+}
+
 /* ---- CSV import / export ---- */
 function parseTime(s){ if(s==null)return null; s=(''+s).trim().toLowerCase(); if(!s)return null;
   const m=s.match(/(\d{1,2})(?::(\d{2}))?\s*([ap])?/); if(!m)return null;
   let hr=+m[1], mn=m[2]?+m[2]:0; const ap=m[3];
   if(ap==='p'&&hr<12)hr+=12; if(ap==='a'&&hr===12)hr=0; return hr+mn/60; }
-function matchFocus(v){ v=(''+(v||'')).trim().toLowerCase(); if(!v) return 'config';
-  if(/pass|pwd/.test(v)) return 'password';
-  if(/engage/.test(v)) return 'engage';
-  if(/tech/.test(v)) return 'tech';
-  if(/bill/.test(v)) return 'billing';
-  if(/lab/.test(v)) return 'labs';
-  if(/config|other|medeo/.test(v)) return 'config';
-  const f=FOCUSES.find(x=>x.id===v||x.name.toLowerCase()===v); return f?f.id:'config'; }
+function matchFocus(v){ v=(''+(v||'')).trim().toLowerCase(); if(!v) return FOCUSES[0].id;
+  let f=FOCUSES.find(x=>x.id===v||x.name.toLowerCase()===v); if(f)return f.id;
+  if(/pass|pwd/.test(v)) f=FOCUSES.find(x=>/pass|pwd/.test(x.name.toLowerCase()));
+  else if(/engage/.test(v)) f=FOCUSES.find(x=>/engage/.test(x.name.toLowerCase()));
+  else if(/tech/.test(v)) f=FOCUSES.find(x=>/tech/.test(x.name.toLowerCase()));
+  else if(/bill/.test(v)) f=FOCUSES.find(x=>/bill/.test(x.name.toLowerCase()));
+  else if(/lab/.test(v)) f=FOCUSES.find(x=>/lab/.test(x.name.toLowerCase()));
+  else if(/config|other|medeo/.test(v)) f=FOCUSES.find(x=>/config|other/.test(x.name.toLowerCase()));
+  return f?f.id:FOCUSES[0].id; }
 function matchShift(v){ if(v==null)return SHIFTS[0].id; const t=parseTime((''+v).split(/[–\-]/)[0]);
   if(t!=null){ let best=SHIFTS[0],bd=99; SHIFTS.forEach(s=>{const d=Math.abs(s.start-t);if(d<bd){bd=d;best=s;}}); return best.id; }
   const lab=(''+v).trim().toLowerCase(); const m=SHIFTS.find(s=>s.label.toLowerCase()===lab); return m?m.id:SHIFTS[0].id; }
@@ -557,7 +725,7 @@ function parseRosterCSV(text){
     let ls=iLs>=0?parseTime(r[iLs]):null; ls=ls!=null?round2(ls):11.5;
     let lm=iLm>=0?parseInt((''+r[iLm]).replace(/\D/g,'')):30; lm=(lm>=45?60:30);
     const statRaw=(iStat>=0?(r[iStat]||''):'').toLowerCase(); const leaving=/leav|term|depart|notice/.test(statRaw);
-    out.push({id:'p'+Date.now()+'_'+i,name,focus,backups:[...new Set(backups)],shift,lunchStart:ls,lunchMin:lm,status:leaving?'leaving':'active',lastDay:(iLast>=0&&r[iLast])?r[iLast].trim():null});
+    out.push({id:'p'+Date.now()+'_'+i,name,focus,backups:[...new Set(backups)],shift,lunchStart:ls,lunchMin:lm,status:leaving?'leaving':'active',lastDay:(iLast>=0&&r[iLast])?r[iLast].trim():null,timeOff:[]});
   }
   return out;
 }
@@ -600,15 +768,21 @@ document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>{ view=b.d
 document.getElementById('addPerson').onclick=()=>openEditor(null);
 document.getElementById('addHire').onclick=()=>openEditor(null);
 document.getElementById('addSeat').onclick=openSeatModal;
+document.getElementById('selectBtn').onclick=function(){ selectMode=!selectMode; selected.clear(); this.classList.toggle('on',selectMode); renderBoard(); renderBulk(); };
 document.getElementById('undoBtn').onclick=undo;
 document.getElementById('redoBtn').onclick=redo;
 document.getElementById('exportBtn').onclick=exportCSV;
+document.getElementById('printBtn').onclick=()=>window.print();
+document.getElementById('settingsBtn').onclick=openSettings;
+document.getElementById('densityBtn').onclick=function(){ const on=document.body.classList.toggle('compact'); this.classList.toggle('on',on); try{localStorage.setItem('spDensity',on?'1':'0');}catch(e){} };
+document.getElementById('viewDate').value=viewDate;
+document.getElementById('viewDate').onchange=function(){ viewDate=this.value||todayStr(); render(); };
 document.getElementById('importBtn').onclick=()=>{ if(confirm('Import a roster CSV?\n\nOK = choose a CSV file to load (replaces the current roster).\nCancel = download a blank template to fill in first.')) document.getElementById('csvFile').click(); else downloadTemplate(); };
 document.getElementById('csvFile').onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
   r.onload=()=>{ const parsed=parseRosterCSV(r.result); if(!parsed.length){flash('No valid rows found — check the column headers');return;}
     if(confirm('Load '+parsed.length+' people from CSV? This replaces the current roster.')){ people=parsed; commit(); flash('Imported '+parsed.length+' people'); } };
   r.readAsText(f); e.target.value=''; };
-document.getElementById('resetBtn').onclick=()=>{ if(confirm('Reset to the sample roster? This clears your current board.')){ people=sampleData(); seats=[]; commit(); } };
+document.getElementById('resetBtn').onclick=()=>{ if(confirm('Reset to the sample roster + default focuses/shifts? This clears your current board.')){ FOCUSES=JSON.parse(JSON.stringify(DEFAULT_FOCUSES)); SHIFTS=JSON.parse(JSON.stringify(DEFAULT_SHIFTS)); people=sampleData(); seats=[]; buildFilterSelects(); commit(); } };
 document.getElementById('mLeaveTog').onclick=()=>{ editLeaving=!editLeaving; syncLeaveUI(); };
 document.getElementById('mSave').onclick=saveEditor;
 document.getElementById('mCancel').onclick=closeEditor;
@@ -617,19 +791,27 @@ document.getElementById('overlay').onclick=e=>{ if(e.target.id==='overlay') clos
 document.getElementById('seatCancel').onclick=()=>document.getElementById('seatOverlay').classList.remove('show');
 document.getElementById('seatAdd').onclick=addSeats;
 document.getElementById('seatOverlay').onclick=e=>{ if(e.target.id==='seatOverlay') e.currentTarget.classList.remove('show'); };
+document.getElementById('addFocusBtn').onclick=()=>{ editFoc.push({name:'New focus',color:'#7aa2c2'}); renderSetRows(); };
+document.getElementById('addShiftBtn').onclick=()=>{ editShf.push({s:9,e:17.5}); renderSetRows(); };
+document.getElementById('setCancel').onclick=()=>document.getElementById('setOverlay').classList.remove('show');
+document.getElementById('setSave').onclick=saveSettings;
+document.getElementById('setOverlay').onclick=e=>{ if(e.target.id==='setOverlay') e.currentTarget.classList.remove('show'); };
 document.getElementById('fq').oninput=function(){ F.q=this.value; renderBoard(); };
 document.getElementById('fFocus').onchange=function(){ F.focus=this.value; renderBoard(); };
 document.getElementById('fShift').onchange=function(){ F.shift=this.value; renderBoard(); };
 document.getElementById('fBackup').onchange=function(){ F.backup=this.value; renderBoard(); };
 document.getElementById('fClear').onclick=()=>{ F={q:'',focus:'',shift:'',backup:''}; document.getElementById('fq').value=''; document.getElementById('fFocus').value=''; document.getElementById('fShift').value=''; document.getElementById('fBackup').value=''; renderBoard(); };
 document.addEventListener('keydown',e=>{ const k=(e.key||'').toLowerCase(); const tag=(e.target.tagName||'').toLowerCase();
-  if(e.key==='Escape'){ closeEditor(); document.getElementById('seatOverlay').classList.remove('show'); return; }
+  if(e.key==='Escape'){ closeEditor(); document.getElementById('seatOverlay').classList.remove('show'); document.getElementById('setOverlay').classList.remove('show'); return; }
   if(tag==='input'||tag==='select') return;
   if((e.ctrlKey||e.metaKey)&&k==='z'&&!e.shiftKey){ e.preventDefault(); undo(); }
   else if((e.ctrlKey||e.metaKey)&&(k==='y'||(k==='z'&&e.shiftKey))){ e.preventDefault(); redo(); } });
 
+try{ if(localStorage.getItem('spDensity')==='1'){ document.body.classList.add('compact'); document.getElementById('densityBtn').classList.add('on'); } }catch(e){}
+const loaded=load();
+if(loaded){ if(loaded.focuses&&loaded.focuses.length)FOCUSES=loaded.focuses; if(loaded.shifts&&loaded.shifts.length)SHIFTS=loaded.shifts; people=migrate(loaded.people); seats=loaded.seats; }
+else { people=sampleData(); seats=[]; }
 buildFilterSelects();
-const loaded=load(); if(loaded){ people=loaded.people; seats=loaded.seats; } else { people=sampleData(); seats=[]; }
 render();
 </script>
 </body>
