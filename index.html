@@ -74,6 +74,7 @@
   .card:hover{border-color:var(--teal)}
   .card.leaving{border-color:var(--warn);background:var(--warnbg)}
   .card.ghost{opacity:.55}
+  .card.cover{opacity:.82;border-style:dashed}
   .card.dim{opacity:.16}
   .card.hit{outline:2px solid var(--teal);outline-offset:-2px}
   .card .dot{width:9px;height:9px;border-radius:2px;flex:none}
@@ -189,12 +190,12 @@
 
 <script>
 const FOCUSES=[
-  {id:'tech',name:'Tech',color:'#18a5be'},
+  {id:'config',name:'Config / Other',color:'#18a5be'},
+  {id:'password',name:'Password',color:'#a974e0'},
+  {id:'tech',name:'Tech',color:'#5b8def'},
   {id:'billing',name:'Billing',color:'#e8512d'},
-  {id:'config',name:'Config',color:'#e0a82e'},
   {id:'labs',name:'Labs',color:'#3fae74'},
-  {id:'medeo',name:'Medeo',color:'#5b8def'},
-  {id:'other',name:'Other/Pwd',color:'#a974e0'},
+  {id:'engage',name:'Accuro Engage',color:'#e0a82e'},
 ];
 const fmtHM=h=>{let hh=Math.floor(h);const m=Math.round((h-hh)*60);const ap=hh>=12?'p':'a';let d=hh%12;if(d===0)d=12;return d+(m?(':'+String(m).padStart(2,'0')):'')+ap;};
 const SHIFTS=[
@@ -216,13 +217,13 @@ let people=[], seats=[], view='grid', afterDep=false, selectedSnap=null;
 let F={q:'',focus:'',shift:'',backup:''};
 
 function sampleData(){
-  const dist={tech:12,billing:8,config:7,labs:5,medeo:4,other:4};
-  const sec={tech:'other',billing:'config',config:'billing',labs:'medeo',medeo:'labs',other:'tech'};
+  const specialties=['tech','billing','labs','password','engage'];
   const first=['Alex','Sam','Jordan','Casey','Riley','Morgan','Taylor','Jamie','Avery','Quinn','Drew','Cameron','Reese','Parker','Marlene','Dave','Robin','Sky','Devon','Harper','Rowan','Emerson','Finley','Hayden','Kai','Lane','Micah','Nova','Oakley','Peyton','Sage','Tatum','Wren','Blake','Charlie','Dakota','Elliot','Frankie','Gray','Hollis','Indie','Jules','Kit','Lennox','Marlo','Nico','Orion'];
-  const arr=[]; let n=0, si=0;
-  FOCUSES.forEach(f=>{ for(let i=0;i<(dist[f.id]||0);i++){ const sh=SHIFTS[si%SHIFTS.length]; si++; n++;
+  const arr=[];
+  for(let n=1;n<=46;n++){ const sh=SHIFTS[(n-1)%SHIFTS.length];
     const ls=clamp(round2(sh.start+3+(n%5)*0.5), sh.start+2, sh.end-1);
-    arr.push({id:'p'+n,name:first[n-1]||('Agent '+n),focus:f.id,backups:(n%3===0?[sec[f.id]]:[]),shift:sh.id,lunchStart:ls,lunchMin:(n%3===0?60:30),status:'active',lastDay:null}); } });
+    const backups=(n%5!==0)?[specialties[(n-1)%specialties.length]]:[]; // everyone is Config/Other; most also cover one specialty
+    arr.push({id:'p'+n,name:first[n-1]||('Agent '+n),focus:'config',backups,shift:sh.id,lunchStart:ls,lunchMin:(n%3===0?60:30),status:'active',lastDay:null}); }
   const d=new Date(); d.setDate(d.getDate()+18); const dd=d.toISOString().slice(0,10);
   if(arr[2]){arr[2].status='leaving';arr[2].lastDay=dd;}
   if(arr[14]){arr[14].status='leaving';arr[14].lastDay=dd;}
@@ -253,6 +254,7 @@ function setSnaps(o){ try{localStorage.setItem(SNAPKEY,JSON.stringify(o));}catch
 /* ---- helpers ---- */
 const isLeaving=p=>p.status==='leaving';
 const activeAfter=list=>list.filter(p=>!isLeaving(p)).length;
+const coversFocus=(p,fid)=>p.focus===fid||(p.backups||[]).includes(fid);
 function inShift(p,t){ const sh=shiftById(p.shift); return t>=sh.start&&t<sh.end; }
 function onPhone(p,t){ if(!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return !(t>=p.lunchStart&&t<le); }
 function atLunch(p,t){ if(!inShift(p,t))return false; const le=p.lunchStart+(p.lunchMin/60); return t>=p.lunchStart&&t<le; }
@@ -297,6 +299,7 @@ function cardHTML(p,opts){
   const meta = opts.ghost ? '' : `<span class="lunch">${fmtHM(p.lunchStart)}·${p.lunchMin}</span>`;
   const lv=isLeaving(p)&&!opts.ghost?`<span class="lv">↓${p.lastDay||''}</span>`:'';
   let cls='';
+  if(opts.ctxFocus&&p.focus!==opts.ctxFocus) cls+=' cover';
   if(filterActive()){ if(matchFilter(p)){ if(F.q) cls+=' hit'; } else cls+=' dim'; }
   return `<div class="card ${isLeaving(p)?'leaving':''} ${opts.ghost?'ghost':''}${cls}" draggable="${opts.ghost?'false':'true'}" data-id="${p.id}">
     <span class="dot" style="background:${f.color}"></span><span class="nm">${esc(p.name)}</span>${backs?`<span class="backs">${backs}</span>`:''}${meta}${lv}</div>`;
@@ -322,21 +325,21 @@ function renderBoard(){
 }
 function gridView(){
   let h=`<div class="gridv" style="grid-template-columns:140px repeat(${FOCUSES.length},1fr)"><div class="gcorner"></div>`;
-  FOCUSES.forEach(f=>{ const list=people.filter(p=>p.focus===f.id); const leav=list.length-activeAfter(list);
-    h+=`<div class="ghead" style="color:${f.color}">${f.name}<span class="sub">${activeAfter(list)}${leav?' (−'+leav+')':''}</span></div>`; });
+  FOCUSES.forEach(f=>{ const cov=people.filter(p=>coversFocus(p,f.id)); const prim=people.filter(p=>p.focus===f.id);
+    h+=`<div class="ghead" style="color:${f.color}">${f.name}<span class="sub">${activeAfter(cov)} cover${activeAfter(prim)!==activeAfter(cov)?' · '+activeAfter(prim)+' main':''}</span></div>`; });
   SHIFTS.forEach(sh=>{
     const rowList=people.filter(p=>p.shift===sh.id); const rl=rowList.length-activeAfter(rowList);
     h+=`<div class="growlab">${sh.label}<span class="sub">${activeAfter(rowList)} ppl${rl?' · −'+rl:''}</span></div>`;
-    FOCUSES.forEach(f=>{ const cell=people.filter(p=>p.shift===sh.id&&p.focus===f.id);
+    FOCUSES.forEach(f=>{ const cell=people.filter(p=>p.shift===sh.id&&coversFocus(p,f.id));
       const cellSeats=seats.filter(s=>s.shift===sh.id&&s.focus===f.id);
       const leav=cell.length-activeAfter(cell); const cls=(cell.length===0&&!cellSeats.length)?'empty':(leav>0||cellSeats.length?'thin':'');
-      h+=`<div class="gcell ${cls}" data-shift="${sh.id}" data-focus="${f.id}">${cell.map(p=>cardHTML(p)).join('')}${cellSeats.map(seatHTML).join('')}${(cell.length===0&&!cellSeats.length)?'<span class="empty-note">—</span>':''}</div>`; });
+      h+=`<div class="gcell ${cls}" data-shift="${sh.id}" data-focus="${f.id}">${cell.map(p=>cardHTML(p,{ctxFocus:f.id})).join('')}${cellSeats.map(seatHTML).join('')}${(cell.length===0&&!cellSeats.length)?'<span class="empty-note">—</span>':''}</div>`; });
   });
   h+=`</div>`; return h;
 }
 function colsView(mode){
   let cols;
-  if(mode==='focus') cols=FOCUSES.map(f=>({key:f.id,label:f.name,color:f.color,match:p=>p.focus===f.id,smatch:s=>s.focus===f.id,drop:'focus'}));
+  if(mode==='focus') cols=FOCUSES.map(f=>({key:f.id,label:f.name,color:f.color,match:p=>coversFocus(p,f.id),smatch:s=>s.focus===f.id,drop:'focus'}));
   else if(mode==='shift') cols=SHIFTS.map(s=>({key:s.id,label:s.label,color:'var(--teal)',match:p=>p.shift===s.id,smatch:se=>se.shift===s.id,drop:'shift'}));
   else { const times=[...new Set(people.map(p=>p.lunchStart))].sort((a,b)=>a-b);
     cols=times.map(t=>({key:t,label:fmtHM(t)+' lunch',color:'var(--warn)',match:p=>p.lunchStart===t,smatch:()=>false,drop:'lunch'})); }
@@ -348,13 +351,11 @@ function colsView(mode){
     h+=`<div class="col" ${dropAttr}><div class="colhead"><span class="dot" style="width:11px;height:11px;border-radius:3px;background:${c.color}"></span><span class="nm">${c.label}</span><span class="ct">${activeAfter(list)}${leav?` <b>−${leav}</b>`:''}${colSeats.length?` <span style="color:var(--teal)">+${colSeats.length} open</span>`:''}</span></div><div class="colbody">`;
     if(mode==='focus'){
       SHIFTS.forEach(sh=>{ const sub=list.filter(p=>p.shift===sh.id); const ss=colSeats.filter(s=>s.shift===sh.id);
-        if(sub.length||ss.length) h+=`<div class="subhead">${sh.label}</div>`+sub.map(p=>cardHTML(p)).join('')+ss.map(seatHTML).join(''); });
-      const canCover=people.filter(p=>(p.backups||[]).includes(c.key));
-      if(canCover.length) h+=`<div class="subhead" style="color:${c.color}">Can also cover (backup)</div>`+canCover.map(p=>cardHTML(p,{ghost:true})).join('');
-      if(!list.length&&!colSeats.length&&!canCover.length) h+=`<span class="empty-note">empty — drop someone here</span>`;
+        if(sub.length||ss.length) h+=`<div class="subhead">${sh.label}</div>`+sub.map(p=>cardHTML(p,{ctxFocus:c.key})).join('')+ss.map(seatHTML).join(''); });
+      if(!list.length&&!colSeats.length) h+=`<span class="empty-note">empty — drop someone here</span>`;
     } else {
-      FOCUSES.forEach(f=>{ const sub=list.filter(p=>p.focus===f.id); const ss=colSeats.filter(s=>s.focus===f.id);
-        if(sub.length||ss.length) h+=`<div class="subhead"><span class="bdot" style="width:8px;height:8px;background:${f.color}"></span>${f.name}</div>`+sub.map(p=>cardHTML(p)).join('')+ss.map(seatHTML).join(''); });
+      FOCUSES.forEach(f=>{ const sub=list.filter(p=>coversFocus(p,f.id)); const ss=colSeats.filter(s=>s.focus===f.id);
+        if(sub.length||ss.length) h+=`<div class="subhead"><span class="bdot" style="width:8px;height:8px;background:${f.color}"></span>${f.name}</div>`+sub.map(p=>cardHTML(p,{ctxFocus:f.id})).join('')+ss.map(seatHTML).join(''); });
       if(!list.length&&!colSeats.length) h+=`<span class="empty-note">empty — drop someone here</span>`;
     }
     h+=`</div></div>`;
@@ -370,8 +371,8 @@ function lunchWarnings(set){
   const out=[];
   FOCUSES.forEach(f=>{ let run=null;
     DAY_TS.forEach(t=>{
-      const sched=set.filter(p=>p.focus===f.id&&inShift(p,t)).length;
-      const onp=set.filter(p=>p.focus===f.id&&onPhone(p,t)).length;
+      const sched=set.filter(p=>coversFocus(p,f.id)&&inShift(p,t)).length;
+      const onp=set.filter(p=>coversFocus(p,f.id)&&onPhone(p,t)).length;
       const hole = sched>0 && onp===0; // assigned people exist but all at lunch
       if(hole){ if(!run) run={from:t,to:t+0.5,n:sched}; else { run.to=t+0.5; run.n=Math.max(run.n,sched); } }
       else if(run){ out.push({focus:f,...run}); run=null; }
@@ -387,10 +388,10 @@ function dayView(){
   if(warns.length){ h+=`<div class="warnbox"><h3>⚠ Lunch coverage holes</h3>`+
     warns.map(w=>`<div class="warnrow"><span class="qd" style="background:${w.focus.color}"></span><b>${w.focus.name}</b> uncovered ${fmtHM(w.from)}–${fmtHM(w.to)} — all ${w.n} assigned ${w.n===1?'person is':'people are'} at lunch</div>`).join('')+`</div>`; }
   h+=`<div class="toolbar" style="padding:0 0 10px;border:none"><button class="btn small ${afterDep?'on':''}" id="afterDepBtn">After departures: ${afterDep?'ON':'off'}</button><span class="muted small">${afterDep?'Showing coverage once everyone marked leaving is gone.':'Showing current coverage (everyone on the roster).'}</span></div>`;
-  h+=`<div class="muted small" style="margin-bottom:10px">On-phone headcount per focus, every 30 min (shift hours minus lunch). <b style="color:#ffb4a4">Red</b> = nobody covering that focus while the floor is open.</div>`;
+  h+=`<div class="muted small" style="margin-bottom:10px">People on shift who can cover each focus (primary or backup), every 30 min. Someone counts toward every focus they cover, so rows can overlap. <b style="color:#ffb4a4">Red</b> = nobody able to cover that focus while the floor is open.</div>`;
   h+=`<div style="overflow:auto"><table class="day"><thead><tr><th class="rl"></th>${DAY_TS.map(t=>`<th>${t%1===0?fmtHM(t):''}</th>`).join('')}</tr></thead><tbody>`;
   FOCUSES.forEach(f=>{ h+=`<tr><td class="rl" style="color:${f.color}">${f.name}</td>`;
-    DAY_TS.forEach(t=>{ const n=set.filter(p=>p.focus===f.id&&onPhone(p,t)).length; h+=`<td class="dc" style="${dcStyle(n)}">${n||''}</td>`; });
+    DAY_TS.forEach(t=>{ const n=set.filter(p=>coversFocus(p,f.id)&&onPhone(p,t)).length; h+=`<td class="dc" style="${dcStyle(n)}">${n||''}</td>`; });
     h+=`</tr>`; });
   h+=`<tr><td class="rl" style="border-top:2px solid var(--line2)">All on-phone</td>${DAY_TS.map(t=>{const n=set.filter(p=>onPhone(p,t)).length;return `<td class="dc" style="${dcStyle(n)};font-weight:700;border-top:2px solid var(--line2)">${n}</td>`;}).join('')}</tr>`;
   h+=`<tr><td class="rl muted">At lunch</td>${DAY_TS.map(t=>{const n=set.filter(p=>atLunch(p,t)).length;return `<td class="dc" style="background:rgba(224,168,46,${Math.min(.6,n*0.09)});color:#2a1e02">${n||''}</td>`;}).join('')}</tr>`;
@@ -451,7 +452,7 @@ function wireDnD(){
 }
 
 /* ---- person editor ---- */
-let editId=null, editLeaving=false, editPrimary='tech', editBackups=[], editSeatId=null;
+let editId=null, editLeaving=false, editPrimary='config', editBackups=[], editSeatId=null;
 function renderBackupChips(){
   const el=document.getElementById('mBackups');
   el.innerHTML=FOCUSES.map(f=>{ const isP=f.id===editPrimary; const on=editBackups.includes(f.id);
@@ -478,7 +479,7 @@ function openEditor(id, seat){
     if(seat){ document.getElementById('mTitle').textContent='Fill open seat'; fSel.value=seat.focus; sSel.value=seat.shift; lSel.value=seat.lunchStart||11.5; document.getElementById('mLunchMin').value=String(seat.lunchMin||30); editSeatId=seat.id; }
     else { document.getElementById('mTitle').textContent='Place new hire'; const g=upcomingGaps()[0];
       if(g){ fSel.value=g.focus.id; sSel.value=g.shift.id; lSel.value=g.p.lunchStart; document.getElementById('mLunchMin').value=String(g.p.lunchMin); }
-      else { lSel.value=11.5; document.getElementById('mLunchMin').value='30'; } }
+      else { fSel.value='config'; lSel.value=11.5; document.getElementById('mLunchMin').value='30'; } }
     editPrimary=fSel.value; editBackups=[];
     document.getElementById('mDelete').style.display='none';
   }
@@ -526,9 +527,14 @@ function parseTime(s){ if(s==null)return null; s=(''+s).trim().toLowerCase(); if
   const m=s.match(/(\d{1,2})(?::(\d{2}))?\s*([ap])?/); if(!m)return null;
   let hr=+m[1], mn=m[2]?+m[2]:0; const ap=m[3];
   if(ap==='p'&&hr<12)hr+=12; if(ap==='a'&&hr===12)hr=0; return hr+mn/60; }
-function matchFocus(v){ if(!v)return null; v=(''+v).trim().toLowerCase();
-  if(/pass|pwd|other/.test(v))return 'other';
-  const f=FOCUSES.find(x=>x.id===v||x.name.toLowerCase()===v||x.name.toLowerCase().startsWith(v)||v.startsWith(x.id)); return f?f.id:null; }
+function matchFocus(v){ v=(''+(v||'')).trim().toLowerCase(); if(!v) return 'config';
+  if(/pass|pwd/.test(v)) return 'password';
+  if(/engage/.test(v)) return 'engage';
+  if(/tech/.test(v)) return 'tech';
+  if(/bill/.test(v)) return 'billing';
+  if(/lab/.test(v)) return 'labs';
+  if(/config|other|medeo/.test(v)) return 'config';
+  const f=FOCUSES.find(x=>x.id===v||x.name.toLowerCase()===v); return f?f.id:'config'; }
 function matchShift(v){ if(v==null)return SHIFTS[0].id; const t=parseTime((''+v).split(/[–\-]/)[0]);
   if(t!=null){ let best=SHIFTS[0],bd=99; SHIFTS.forEach(s=>{const d=Math.abs(s.start-t);if(d<bd){bd=d;best=s;}}); return best.id; }
   const lab=(''+v).trim().toLowerCase(); const m=SHIFTS.find(s=>s.label.toLowerCase()===lab); return m?m.id:SHIFTS[0].id; }
@@ -545,8 +551,8 @@ function parseRosterCSV(text){
     iLs=col(/lunch.*start|lunch.*time|^lunch$/), iLm=col(/length|min|duration/), iStat=col(/status|leav/), iLast=col(/last/);
   const out=[];
   for(let i=1;i<lines.length;i++){ const r=splitCSV(lines[i]); const name=(r[iName]||'').trim(); if(!name)continue;
-    const focus=matchFocus(r[iFocus]); if(!focus)continue;
-    const backups=(iBack>=0?(r[iBack]||''):'').split(/[\/;|]/).map(x=>matchFocus(x)).filter(x=>x&&x!==focus);
+    const focus=matchFocus(r[iFocus]);
+    const backups=(iBack>=0?(r[iBack]||''):'').split(/[\/;|]/).map(x=>x.trim()).filter(Boolean).map(x=>matchFocus(x)).filter(x=>x&&x!==focus);
     const shift=matchShift(iShift>=0?r[iShift]:'');
     let ls=iLs>=0?parseTime(r[iLs]):null; ls=ls!=null?round2(ls):11.5;
     let lm=iLm>=0?parseInt((''+r[iLm]).replace(/\D/g,'')):30; lm=(lm>=45?60:30);
@@ -557,9 +563,9 @@ function parseRosterCSV(text){
 }
 function downloadTemplate(){
   const t=['Name,Primary focus,Backups,Shift,Lunch start,Lunch length,Status,Last day',
-    'Jane Doe,Tech,Other/Pwd,5:00a,11:00a,30,,',
-    'John Smith,Billing,Config/Labs,8:00a,12:30p,60,,',
-    'Sam Lee,Labs,,6:30a,11:30a,30,leaving,2026-07-15'].join('\n');
+    'Jane Doe,Config / Other,Tech,5:00a,11:00a,30,,',
+    'John Smith,Config / Other,Billing/Labs,8:00a,12:30p,60,,',
+    'Sam Lee,Config / Other,Password,6:30a,11:30a,30,leaving,2026-07-15'].join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='simple-plan-template.csv';a.click();
 }
 function exportCSV(){
