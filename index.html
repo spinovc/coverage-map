@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Accuro Simple Plan</title>
+<title>Accuro Client Services Coverage Map</title>
 <style>
   :root{
     --bg:#0d1524; --panel:#15203a; --panel2:#1c2a47; --line:#28385c; --line2:#34466e;
@@ -160,7 +160,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <div class="logo"><span class="mark"></span><div><h1>Accuro Simple Plan</h1><small>WHO'S WHERE · COVERAGE MAP</small></div></div>
+    <div class="logo"><span class="mark"></span><div><h1>Accuro Client Services Coverage Map</h1><small>WHO'S WHERE · COVERAGE MAP</small></div></div>
     <div class="kpis" id="kpis"></div>
   </div>
   <div class="toolbar">
@@ -276,6 +276,7 @@ let people=[], seats=[], view='grid', afterDep=false, selectedSnap=null;
 let F={q:'',focus:'',shift:'',backup:''};
 let viewDate=todayStr();
 let selectMode=false, selected=new Set();
+let clipboard=[], hoveredId=null;
 
 function sampleData(){
   const specialties=['tech','billing','labs','password','engage'];
@@ -396,7 +397,7 @@ function tipHTML(p){ const f=focusById(p.focus);
 function wireTips(scope){
   const tip=document.getElementById('tip');
   scope.querySelectorAll('.card[data-id]').forEach(c=>{
-    c.addEventListener('mouseenter',()=>{ if(selectMode)return; const p=people.find(x=>x.id===c.dataset.id); if(!p)return; tip.innerHTML=tipHTML(p); tip.style.display='block'; });
+    c.addEventListener('mouseenter',()=>{ hoveredId=c.dataset.id; if(selectMode)return; const p=people.find(x=>x.id===c.dataset.id); if(!p)return; tip.innerHTML=tipHTML(p); tip.style.display='block'; });
     c.addEventListener('mousemove',e=>{ tip.style.left=Math.min(e.clientX+14,innerWidth-260)+'px'; tip.style.top=Math.min(e.clientY+14,innerHeight-120)+'px'; });
     c.addEventListener('mouseleave',()=>{ tip.style.display='none'; });
   });
@@ -761,6 +762,8 @@ function render(){ record(); renderKPIs(); renderGaps(); renderBoard();
   document.getElementById('undoBtn').disabled=!undoStack.length;
   document.getElementById('redoBtn').disabled=!redoStack.length; }
 function commit(){ save(); render(); }
+function copySel(e){ const ids=(selectMode&&selected.size)?[...selected]:(hoveredId?[hoveredId]:[]); if(!ids.length)return; e.preventDefault(); clipboard=ids.map(id=>{const p=people.find(x=>x.id===id);return p?JSON.parse(JSON.stringify(p)):null;}).filter(Boolean); flash("Copied "+clipboard.length+" "+(clipboard.length===1?"person":"people")+" — Ctrl+V to paste"); }
+function pasteSel(e){ if(!clipboard.length)return; e.preventDefault(); let k=0; clipboard.forEach(c=>{ const np=JSON.parse(JSON.stringify(c)); np.id="p"+Date.now()+"_"+(k++); np.name=(c.name||"Unnamed")+" (copy)"; np.status="active"; np.lastDay=null; people.push(np); }); commit(); flash("Pasted "+clipboard.length+" "+(clipboard.length===1?"person":"people")); }
 function flash(m){const d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--teal);color:#04222a;padding:8px 16px;border-radius:8px;font-weight:600;z-index:99;max-width:80%;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),2600);}
 
 /* ---- wire up ---- */
@@ -805,7 +808,9 @@ document.addEventListener('keydown',e=>{ const k=(e.key||'').toLowerCase(); cons
   if(e.key==='Escape'){ closeEditor(); document.getElementById('seatOverlay').classList.remove('show'); document.getElementById('setOverlay').classList.remove('show'); return; }
   if(tag==='input'||tag==='select') return;
   if((e.ctrlKey||e.metaKey)&&k==='z'&&!e.shiftKey){ e.preventDefault(); undo(); }
-  else if((e.ctrlKey||e.metaKey)&&(k==='y'||(k==='z'&&e.shiftKey))){ e.preventDefault(); redo(); } });
+  else if((e.ctrlKey||e.metaKey)&&(k==='y'||(k==='z'&&e.shiftKey))){ e.preventDefault(); redo(); }
+  else if((e.ctrlKey||e.metaKey)&&k==='c'){ copySel(e); }
+  else if((e.ctrlKey||e.metaKey)&&k==='v'){ pasteSel(e); } });
 
 try{ if(localStorage.getItem('spDensity')==='1'){ document.body.classList.add('compact'); document.getElementById('densityBtn').classList.add('on'); } }catch(e){}
 const loaded=load();
